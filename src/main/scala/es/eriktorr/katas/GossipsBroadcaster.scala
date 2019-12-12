@@ -16,13 +16,17 @@ class GossipsBroadcaster {
 
   @tailrec
   private def stopsToSpreadAllGossips(minute: Int, drivers: Seq[Driver]): Int = if (minute > MaxStops) minute else {
-    val driversAfterExchangingGossips = drivers.groupBy(_.route.stopAt(minute)).flatMap {
+    val driversAfterTheExchange = driversAfterExchangingGossipsAtCurrent(minute, drivers)
+    val outdatedDriver = driversAfterTheExchange.find(_.gossips.size != drivers.size)
+    if (outdatedDriver.isEmpty) minute else stopsToSpreadAllGossips(minute + 1, driversAfterTheExchange)
+  }
+
+  private def driversAfterExchangingGossipsAtCurrent(minute: Int, drivers: Seq[Driver]): Seq[Driver] = {
+    drivers.groupBy(_.route.stopAt(minute)).flatMap {
       case (_, driversAtSameStop) =>
         val exchangedGossips = driversAtSameStop.map(_.gossips).reduceLeft(_ ++ _)
         driversAtSameStop.map(driver => Driver(driver.route, exchangedGossips))
-    }
-    val outdatedDriver = driversAfterExchangingGossips.find(_.gossips.size != drivers.size)
-    if (outdatedDriver.isEmpty) minute else stopsToSpreadAllGossips(minute + 1, driversAfterExchangingGossips.toSeq)
+    }.toSeq
   }
 
   case class Gossip(id: Int)
