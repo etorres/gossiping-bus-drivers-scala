@@ -2,6 +2,8 @@ package es.eriktorr.katas
 
 class GossipsBroadcasterSpec extends UnitSpec {
 
+  implicit val GossipsExchanger: GossipsExchanger = new GossipsExchanger
+
   "Gossips broadcaster" should "find the stops it takes to spread all gossips to all drivers" in new GossipsBroadcaster {
     stopsToSpreadAllGossips(Seq(
       BusRoute(Seq(3, 1, 2, 3)),
@@ -16,5 +18,4 @@ class GossipsBroadcasterSpec extends UnitSpec {
       BusRoute(Seq(5, 2, 8))
     )) shouldBe "never"
   }
-
 }

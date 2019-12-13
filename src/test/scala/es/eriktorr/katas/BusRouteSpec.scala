@@ -14,7 +14,7 @@ object BusRouteSpec extends Properties("BusRouteSpec") {
 }
 
 object BusRouteGenerator {
-  private val MinutesOfADay = 480
+  private val MinutesOfADay = BusRoute.MaxStops
 
   val minutesOfADay: Gen[Int] = Gen.choose(1, MinutesOfADay)
 
