@@ -17,9 +17,10 @@ class GossipsBroadcaster {
   @tailrec
   private def stopsToSpreadAllGossips(minute: Int, drivers: Seq[Driver]): Int = if (minute > MaxStops) minute else {
     val driversAfterTheExchange = driversAfterExchangingGossipsAtCurrent(minute, drivers)
-    val outdatedDriver = driversAfterTheExchange.find(_.gossips.size != drivers.size)
-    if (outdatedDriver.isEmpty) minute else stopsToSpreadAllGossips(minute + 1, driversAfterTheExchange)
+    if (haveAllTheGossips(driversAfterTheExchange)) minute else stopsToSpreadAllGossips(minute + 1, driversAfterTheExchange)
   }
+
+  private def haveAllTheGossips(drivers: Seq[Driver]): Boolean = !drivers.exists(_.gossips.size != drivers.size)
 
   private def driversAfterExchangingGossipsAtCurrent(minute: Int, drivers: Seq[Driver]): Seq[Driver] = {
     drivers.groupBy(_.route.stopAt(minute)).flatMap {
