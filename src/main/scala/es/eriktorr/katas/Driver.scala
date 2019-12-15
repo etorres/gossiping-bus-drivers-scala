@@ -1,3 +1,3 @@
 package es.eriktorr.katas
 
-case class Driver(route: BusRoute, gossips: Set[Gossip])
+case class Driver(route: BusRoute, gossips: Gossips)

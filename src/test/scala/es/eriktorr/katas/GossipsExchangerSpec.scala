@@ -18,12 +18,12 @@ class GossipsExchangerSpec extends UnitSpec with DriverMatchers {
 }
 
 trait DriverMatchers {
-  class DriverKnowsGossipsMatcher(gossips: Set[Gossip]) extends Matcher[Seq[Driver]] {
-    override def apply(left: Seq[Driver]): MatchResult = MatchResult(
+  class DriverKnowsGossipsMatcher(gossips: Gossips) extends Matcher[Drivers] {
+    override def apply(left: Drivers): MatchResult = MatchResult(
       matches = left.map(_.gossips).forall(_ == gossips),
       rawFailureMessage = s"not all drivers $left know all gossips $gossips",
       rawNegatedFailureMessage = "all drivers know all gossips")
   }
 
-  def knowAll(gossips: Set[Gossip]) = new DriverKnowsGossipsMatcher(gossips)
+  def knowAll(gossips: Gossips) = new DriverKnowsGossipsMatcher(gossips)
 }
