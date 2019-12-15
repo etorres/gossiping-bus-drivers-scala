@@ -6,14 +6,17 @@ class GossipsBroadcaster()(implicit val gossipsExchanger: GossipsExchanger) {
 
   def stopsToSpreadAllGossips(busRoutes: Seq[BusRoute]): String = {
     val drivers = driversFrom(busRoutes)
-    val stops = stopsToSpreadAllGossips(minute = 1, drivers)
+    val stops = stopsToSpreadAllGossipsTo(drivers)
     if (stops <= BusRoute.MaxStops) stops.toString else "never"
   }
 
-  @tailrec
-  private def stopsToSpreadAllGossips(minute: Int, drivers: Seq[Driver]): Int = if (minute > BusRoute.MaxStops) minute else {
-    val updatedDrivers = gossipsExchanger.driversAfterExchangingGossipsAt(minute, drivers)
-    if (haveAllTheGossips(updatedDrivers)) minute else stopsToSpreadAllGossips(minute + 1, updatedDrivers)
+  private def stopsToSpreadAllGossipsTo(drivers: Seq[Driver]): Int = {
+    @tailrec
+    def stopsToSpreadAllGossipsTo(drivers: Seq[Driver], minute: Int): Int = if (minute > BusRoute.MaxStops) minute else {
+      val updatedDrivers = gossipsExchanger.driversAfterExchangingGossipsAt(minute, drivers)
+      if (haveAllTheGossips(updatedDrivers)) minute else stopsToSpreadAllGossipsTo(updatedDrivers, minute + 1)
+    }
+    stopsToSpreadAllGossipsTo(drivers, minute = 1)
   }
 
   private def haveAllTheGossips(drivers: Seq[Driver]) = !drivers.exists(_.gossips.size != drivers.size)
