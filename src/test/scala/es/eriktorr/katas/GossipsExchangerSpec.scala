@@ -5,11 +5,15 @@ import org.scalatest.matchers.{MatchResult, Matcher}
 class GossipsExchangerSpec extends UnitSpec with DriverMatchers {
 
   "Gossips exchanger" should "merge all gossips at current minute" in new GossipsExchanger {
-    driversAfterExchangingGossipsAt(3, drivers) should knowAll(Set(Gossip1, Gossip2))
+    driversAfterExchangingGossipsAtCurrentStop(drivers) should knowAll(Set(Gossip1, Gossip2))
   }
 
-  private lazy val BusRoute1: BusRoute = BusRoute(Seq(1, 2, 3))
-  private lazy val BusRoute2: BusRoute = BusRoute(Seq(5, 4, 3))
+  "Gossips exchanger" should "advance route to the next stop" in new GossipsExchanger {
+    advanceToNextStop(BusRoute2) shouldBe BusRoute(Seq(4, 5, 3))
+  }
+
+  private lazy val BusRoute1: BusRoute = BusRoute(Seq(3, 2))
+  private lazy val BusRoute2: BusRoute = BusRoute(Seq(3, 4, 5))
 
   private lazy val Gossip1: Gossip = Gossip(1)
   private lazy val Gossip2: Gossip = Gossip(2)

@@ -1,11 +1,16 @@
 package es.eriktorr.katas
 
 object BusRoute {
-  val MaxStops = 480
+  private val MaxStops = 480
+
+  def isBeforeTheEndOfTheDay(stopCount: Int): Boolean = stopCount <= BusRoute.MaxStops
+
+  def isAfterTheEndOfTheDay(minute: Int): Boolean = {
+    val stopCount = stopCountFrom(minute)
+    !isBeforeTheEndOfTheDay(stopCount)
+  }
+
+  private def stopCountFrom(minute: Int): Int = minute
 }
 
-case class BusRoute(stops: Seq[Int]) {
-  def stopAt(minute: Int): Int = stops(indexFrom(minute) % stops.size)
-
-  private def indexFrom(minute: Int) = minute - 1
-}
+case class BusRoute(stops: Seq[Int])

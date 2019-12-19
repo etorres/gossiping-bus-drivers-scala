@@ -1,23 +1,21 @@
 package es.eriktorr.katas
 
+import es.eriktorr.katas.BusRoute.{isBeforeTheEndOfTheDay, isAfterTheEndOfTheDay}
+
 import scala.annotation.tailrec
 
-class GossipsBroadcaster()(implicit val gossipsExchanger: GossipsExchanger) {
+class GossipsBroadcaster extends GossipsExchanger {
 
   def stopsToSpreadAllGossips(busRoutes: BusRoutes): String = {
     val drivers = driversFrom(busRoutes)
-    val stops = stopsToSpreadGossipsToAll(drivers)
-    if (happenedBeforeTheEndOfTheDay(stops)) stops.toString else "never"
-  }
-
-  private def happenedBeforeTheEndOfTheDay(stops: Int) = {
-    stops <= BusRoute.MaxStops
+    val stopCount = stopsToSpreadGossipsToAll(drivers)
+    if (isBeforeTheEndOfTheDay(stopCount)) stopCount.toString else "never"
   }
 
   private def stopsToSpreadGossipsToAll(drivers: Drivers): Int = {
     @tailrec
-    def stopsToSpreadGossipsToAll(drivers: Drivers, minute: Int): Int = if (minute > BusRoute.MaxStops) minute else {
-      val updatedDrivers = gossipsExchanger.driversAfterExchangingGossipsAt(minute, drivers)
+    def stopsToSpreadGossipsToAll(drivers: Drivers, minute: Int): Int = if (isAfterTheEndOfTheDay(minute)) minute else {
+      val updatedDrivers = driversAfterExchangingGossipsAtCurrentStop(drivers)
       if (haveAllTheGossips(updatedDrivers)) minute else stopsToSpreadGossipsToAll(updatedDrivers, minute + 1)
     }
     stopsToSpreadGossipsToAll(drivers, minute = 1)
